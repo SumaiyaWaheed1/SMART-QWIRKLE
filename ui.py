@@ -42,6 +42,8 @@ HEX_SPACING_Y = HEX_HEIGHT
 
 
 
+pygame.init()
+fullscreen = False
 
 
 def draw_hexagon_at(surface, x, y, radius, fill_color, outline_color=(0,0,0)):
@@ -1057,26 +1059,18 @@ while True:
         ]
 
     # --- compute tight bounds around those elements ---
-        pad = 12
-        min_x = min(r.left   for r in ui_rects)
-        max_x = max(r.right  for r in ui_rects)
-        min_y = min(r.top    for r in ui_rects)
-        max_y = max(r.bottom for r in ui_rects)
+     
+        PANEL_X      = HAND_X - swap_rect.width - 60        # start just left of Swap button
+        PANEL_Y      = UI_Y + NAME_AREA_HEIGHT - 25         # a little above your rack
+        PANEL_WIDTH  = swap_rect.width + 40 \
+                   + MAX_RACK_WIDTH \
+                   + 65                             # swap + gap + 6 tiles + extra
+        PANEL_HEIGHT = HAND_AREA_HEIGHT + 68            # rack height + padding
 
-        wrapper = pygame.Rect(
-            min_x - pad,
-            min_y - pad,
-            (max_x - min_x) + pad*2,
-            (max_y - min_y) + pad*2
-        )
-
-    # --- inflate outward (20px each side horizontally, 10px vertically) ---
-        wrapper.inflate_ip(40, 20)
-
-    # --- draw glow and border ---
-        glow = wrapper.inflate(8, 8)
-        pygame.draw.rect(screen, neon, glow,     border_radius=12, width=4)
-        pygame.draw.rect(screen, neon, wrapper,  border_radius=12, width=2)
+        panel_rect = pygame.Rect(PANEL_X, PANEL_Y, PANEL_WIDTH, PANEL_HEIGHT)
+        glow_rect  = panel_rect.inflate(8, 8)
+        pygame.draw.rect(screen, neon, glow_rect,  border_radius=12, width=4)
+        pygame.draw.rect(screen, neon, panel_rect, border_radius=12, width=2)
             
 
 
@@ -1086,7 +1080,7 @@ while True:
     for i, t in enumerate(human_tiles):
         rect = get_hand_tile_rect(i, UI_Y + NAME_AREA_HEIGHT + 10)
         cx,cy = rect.center
-        draw_hexagon_at(screen,cx,cy,  HEX_RADIUS,PAGE_BG,neon)
+        draw_hexagon_at(screen, cx, cy, HEX_RADIUS, PAGE_BG, neon)
         img = tiles_images.get((t.color.lower(), t.shape))
         if img:
             screen.blit(img, img.get_rect(center=rect.center))
@@ -1128,11 +1122,6 @@ while True:
 
     # Draw Human score box (below AI score box)
             human_score_box = pygame.Rect( 30, WINDOW_HEIGHT- 400 ,250, 120)  # Adjusted Y position for Human score box
-            #human_glow = human_score_box.inflate(8, 8)
-
-            #pygame.draw.rect(screen, neon, human_glow, border_radius=12)
-            #pygame.draw.rect(screen, (20, 20, 60), human_score_box, border_radius=12)
-
     # Human Score Heading
             human_heading = font_med.render("SCORE", True, (255, 255, 255))
             screen.blit(human_heading, (human_score_box.centerx - human_heading.get_width() // 2, human_score_box.y + 8))
