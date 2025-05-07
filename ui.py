@@ -519,7 +519,6 @@ while True:
                     ai_message = get_ai_comment()
                     show_ai_message = True
                     draw_ai_message(ai_message)  # Draw the message on the screen
-                    pygame.display.flip()
                     pygame.time.set_timer(pygame.USEREVENT, 500)
                     bag.extend(human_tiles)
                     random.shuffle(bag)
@@ -562,6 +561,14 @@ while True:
                                         if img:
                                             screen.blit(img, img.get_rect(center=(center_x, center_y)))
 
+                            for idx, t in enumerate(human_tiles):
+                                rect = get_hand_tile_rect(idx, UI_Y + NAME_AREA_HEIGHT + 10)
+                                draw_hexagon_at(screen, rect.centerx, rect.centery,HEX_RADIUS, PAGE_BG, neon)
+                                img = tiles_images.get((t.color.lower(), t.shape))
+                                if img:
+                                    screen.blit(img, img.get_rect(center=rect.center)) 
+
+
 
                             pygame.display.flip()
                             pygame.time.wait(500)
@@ -581,6 +588,12 @@ while True:
                     in_turn = False
                     valid_moves = []
                     update_layout()
+                    for idx, t in enumerate(human_tiles):
+                                rect = get_hand_tile_rect(idx, UI_Y + NAME_AREA_HEIGHT + 10)
+                                draw_hexagon_at(screen, rect.centerx, rect.centery,HEX_RADIUS, PAGE_BG, neon)
+                                img = tiles_images.get((t.color.lower(), t.shape))
+                                if img:
+                                    screen.blit(img, img.get_rect(center=rect.center))                  
                     continue
 
 
@@ -589,7 +602,7 @@ while True:
                     ai_message = get_ai_comment()
                     show_ai_message = True
                     draw_ai_message(ai_message)
-                    pygame.display.flip()
+                    
                     pygame.time.set_timer(pygame.USEREVENT, 500)
                     print("Timer set: 2000ms")
                     board.end_turn()
@@ -609,21 +622,26 @@ while True:
                                     cx, cy = board.grid.get_hex_position(rr, cc)
                                     draw_hexagon_at(screen, cx,cy, HEX_RADIUS+3, PAGE_BG,neon)
                                     draw_hexagon_at(screen, cx,cy, HEX_RADIUS,HIGHLIGHT if (rr,cc) in valid_moves else PAGE_BG)
-
-
-                                    # power‐up icon
                                     pu = board.get_powerup_at(rr, cc)
                                     if pu and pu in powerup_icons:
                                         icon = powerup_icons[pu]
                                         screen.blit(icon, icon.get_rect(center=(cx, cy)))
-
-
-                                    # tile image
                                     t = board.grid.get(rr, cc)
                                     if t:
                                         img = tiles_images.get((t.color.lower(), t.shape))
                                         if img:
                                             screen.blit(img, img.get_rect(center=(cx, cy)))
+                            
+                            for idx, t in enumerate(human_tiles):
+                                rect = get_hand_tile_rect(idx, UI_Y + NAME_AREA_HEIGHT + 10)
+                                draw_hexagon_at(screen, rect.centerx, rect.centery,HEX_RADIUS, PAGE_BG, neon)
+                                img = tiles_images.get((t.color.lower(), t.shape))
+                                if img:
+                                    screen.blit(img, img.get_rect(center=rect.center))
+                            
+                            
+                            
+                            
                             pygame.display.flip()
                             pygame.time.wait(500)
         
@@ -641,6 +659,14 @@ while True:
                     in_turn = False
                     valid_moves = []
                     update_layout()
+                    
+                    for idx, t in enumerate(human_tiles):
+                                rect = get_hand_tile_rect(idx, UI_Y + NAME_AREA_HEIGHT + 10)
+                                draw_hexagon_at(screen, rect.centerx, rect.centery,HEX_RADIUS, PAGE_BG, neon)
+                                img = tiles_images.get((t.color.lower(), t.shape))
+                                if img:
+                                    screen.blit(img, img.get_rect(center=rect.center))
+                    
                     continue
                 elif ev.type == pygame.USEREVENT:
                     print("USEREVENT triggered")
@@ -695,6 +721,7 @@ while True:
 
     # --- DRAW ---
     screen.fill((15, 23, 42))
+    
     def render_text_with_border(font, text, text_color, border_color, border_width=2):
             base = font.render(text, True, text_color)
             size = base.get_size()
@@ -710,6 +737,8 @@ while True:
             # Draw the main text in the center
             border_surface.blit(base, (border_width, border_width))
             return border_surface
+    
+    
     if state == 'start':
         squareanimation(dt)
 
@@ -1083,7 +1112,7 @@ while True:
         draw_hexagon_at(screen, cx, cy, HEX_RADIUS, PAGE_BG, neon)
         img = tiles_images.get((t.color.lower(), t.shape))
         if img:
-            screen.blit(img, img.get_rect(center=rect.center))
+           screen.blit(img, img.get_rect(center=rect.center))
             
 
 
