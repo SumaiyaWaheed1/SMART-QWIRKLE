@@ -8,22 +8,15 @@ from piece import Piece, COLORS, SHAPES
 from ai import QwirkleAI
 import random
 
-
-
-
 # --- Constants ---
 GRID_SIZE = 6
 CELL_SIZE = 80
 BOARD_WIDTH = GRID_SIZE * CELL_SIZE
 BOARD_HEIGHT = GRID_SIZE * CELL_SIZE
-
-
 GRID_Y = 50
 NAME_AREA_HEIGHT = 40
 HAND_AREA_HEIGHT = 120
 TILE_GAP = 10
-
-
 HIGHLIGHT = (65, 73, 92)
 PAGE_BG = (15, 23, 42)
 neon = (0,255,255)
@@ -40,11 +33,8 @@ HEX_HEIGHT = math.sqrt(3) * HEX_RADIUS
 HEX_SPACING_X = HEX_WIDTH * 3 / 4
 HEX_SPACING_Y = HEX_HEIGHT
 
-
-
 pygame.init()
 fullscreen = False
-
 
 def draw_hexagon_at(surface, x, y, radius, fill_color, outline_color=(0,0,0)):
     points = [
@@ -55,14 +45,8 @@ def draw_hexagon_at(surface, x, y, radius, fill_color, outline_color=(0,0,0)):
     pygame.draw.polygon(surface, fill_color, points)
     pygame.draw.polygon(surface, outline_color, points, 2)
 
-
-
-
 # --- Turn state flag ---
 in_turn = False
-
-
-
 
 # --- Pygame Init ---
 pygame.init()
@@ -75,9 +59,7 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE
 pygame.display.set_caption("Smart Qwirkle")
 GRID_X = (WINDOW_WIDTH - BOARD_WIDTH) // 2
 
-
 clock = pygame.time.Clock()
-
 
 try:
     font_large = pygame.font.Font('E:\\supreme-spike-font\\SupremeSpike-KVO8D.otf', 64)
@@ -88,11 +70,6 @@ except FileNotFoundError:
     font_large = pygame.font.SysFont('montserratregular', 64)
     font_med = pygame.font.SysFont('montserratregular', 36)
     font_small = pygame.font.SysFont('montserratregular', 28)
-
-
-
-
-
 
 # --- Layout Helper ---
 def update_layout():
@@ -111,20 +88,19 @@ def update_layout():
     name_input.rect.topleft = ((WINDOW_WIDTH - name_input.rect.width)//2, 300)
     next_btn.rect.topleft   = (name_input.rect.right + 10, name_input.rect.y)
     
-    # Swap & Pass under your rack
+    # Swap & Pass under your rack   
     if state == 'game':
         rack_left = GRID_X
         rack_mid_y = UI_Y + HAND_AREA_HEIGHT//2
         
-        swap_rect.topleft = (HAND_X- swap_rect.width -10,rack_mid_y - swap_rect.height//2)
+        swap_rect.topleft = (HAND_X- swap_rect.width -10,rack_mid_y - swap_rect.height//2  )
         gap= 0
         turn_rect.topleft = (swap_rect.x, swap_rect.bottom + gap )
     else:
         # Hide the buttons by positioning them off-screen when not in 'game' state
         swap_rect.topleft = (-500, -500)
         turn_rect.topleft = (-500, -500)
-        
-        
+           
 class HumanUI:
     def __init__(self, name):
         self.name = name
@@ -132,8 +108,6 @@ class HumanUI:
 
     def take_turn(self, board, screen):
         moves = []
-        # Code for detecting mouse clicks to select a tile and place it on the board
-        # Returns the moves, e.g., a list of (row, col, tile)
         return moves
  
 # --- Fullscreen Toggle ---
@@ -145,9 +119,6 @@ def toggle_fullscreen():
     else:
         screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
     update_layout()
-
-
-
 
 # --- Sound ---
 invalid_move_sound = pygame.mixer.Sound("invalid_move.mp3")
@@ -165,14 +136,11 @@ def get_ai_comment():
 
 def draw_ai_message(message):
     message_box = pygame.Rect(30, GRID_Y+80, 300, 80)
-    #pygame.draw.rect(screen, neon, message_box, border_radius=12)
-    #pygame.draw.rect(screen, (20, 20, 60), message_box, border_radius=12)
     msg_surf = font_small.render(message, True, (255,255,255))
     screen.blit(msg_surf, msg_surf.get_rect(center=message_box.center))
 
 show_ai_message = False
 ai_message = ""
-
 
 # --- TextInput ---
 class TextInput:
@@ -192,12 +160,8 @@ class TextInput:
                 self.text += ev.unicode
     def draw(self, screen, font):
         pygame.draw.rect(screen, (255,255,255), self.rect)
-        pygame.draw.rect(screen, (0,0,0), self.rect, 2)
         txt = font.render(self.text, True, (0,0,0))
         screen.blit(txt, (self.rect.x+5, self.rect.y+5))
-
-
-
 
 # --- Load Tiles ---
 def load_tile_images(path="tiles"):
@@ -232,16 +196,9 @@ try:
     human_icon = pygame.transform.scale(human_icon, (32,32))
 except Exception as e:
     print("Failed to load score avatars:", e)
-    # fallback to None so we can still draw text
     ai_icon = human_icon = None
 
-
-
-
 tiles_images = load_tile_images()
-
-
-
 
 # --- Load Power-up Icons ---
 powerup_icons = {}
@@ -256,9 +213,6 @@ for typ in (PowerUp.UNDO, PowerUp.DOUBLE, PowerUp.WILD):
     except Exception as e:
         print(f"Failed to load powerup '{typ}': {e}")
 
-
-
-
 # --- Button ---
 class Button:
     def __init__(self, rect, text, font, color=(100, 200, 100), hover_color=(120, 220, 120)):
@@ -270,38 +224,28 @@ class Button:
         self.hovering = False
         self.select = False
 
-
     def draw(self, screen):
-        # Check if the button is being hovered over
+       
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos):
             self.hovering = True
         else:
             self.hovering = False
 
-
-        # Change color on hover
+       
         button_color = self.hover_color if self.hovering else self.color
-
 
         # Draw the button with a gaming theme
         pygame.draw.rect(screen, button_color, self.rect, border_radius=10)  # Rounded corners
         pygame.draw.rect(screen, (0, 0, 0), self.rect, 3, border_radius=10)  # Border with shadow
-
 
         # Set text color and render the text
         text_color = (125, 123, 142) if not self.hovering else (0, 0, 0)  # Inverted text color
         txt = self.font.render(self.text, True, text_color)
         screen.blit(txt, txt.get_rect(center=self.rect.center))
 
-
     def is_clicked(self, pos):
         return self.rect.collidepoint(pos)
-
-
-
-
-
 
 # --- UI Elements (initial) ---
 start_btn   = Button((200, 350, 200, 50), 'Start', font_med, color=(100, 255, 255), hover_color=(50, 200, 255))
@@ -312,6 +256,10 @@ name_input  = TextInput((150,300,300,40))
 next_btn    = Button((0, 0, 140, 40), 'Next', font_small, color=(100, 255, 255), hover_color=(50, 200, 255))
 swap_btn    = Button((0, 0, 140, 40), 'Swap Tiles', font_small, color=(100, 255, 255), hover_color=(50, 200, 255))
 pass_btn    = Button((0, 0, 140, 40), 'End Turn', font_small, color=(0, 255, 0), hover_color=(0, 250, 10))
+
+gameover_btn = Button((200, 450, 200, 50), 'Play Again',font_med, color=(100, 255, 255), hover_color=(50, 200, 255))
+winner_text = ''
+
 
 bag_img = pygame.image.load('bag.png').convert_alpha()
 bag_img = pygame.transform.scale(bag_img, (200,80))
@@ -331,17 +279,11 @@ ai_name     = 'Ava'
 human_score = ai_score = 0
 ai_player   = QwirkleAI(name=ai_name, difficulty='hard', max_depth=3)
 
-
-
-
 # --- Bag of Tiles (72) ---
 colors = [c.lower() for c in COLORS.__dict__ if c.isupper()]
 shapes = [s for k,s in SHAPES.__dict__.items() if k.isupper()]
 bag    = [Piece(color, shape) for _ in range(2) for color in colors for shape in shapes]
 random.shuffle(bag)
-
-
-
 
 # --- Board & Drag State ---
 board = Board(
@@ -360,9 +302,6 @@ valid_moves    = []
 selected_tile  = None
 click_x = click_y = 0
 
-
-
-
 def get_hand_tile_rect(idx, y_offset):
     # x0 is now the global HAND_X we set above
    
@@ -373,16 +312,118 @@ def get_hand_tile_rect(idx, y_offset):
         CELL_SIZE
     )
 
-
-
-
 # initial layout
 update_layout()
 
+def check_game_over():
+    global state, winner_text
+    if not bag and (not human_tiles or not ai_tiles):
+        if human_score > ai_score:
+            winner_text = f"{player_name} Wins!"
+        elif ai_score > human_score:
+            winner_text = f"{ai_name} Wins!"
+        else:
+            winner_text = "It's a Draw!"
+        state = 'gameover'
+
+
+def reset_game():
+    global bag, human_tiles, ai_tiles, human_score, ai_score, board, state
+    state = 'start'  # Go back to the start screen
+    human_tiles.clear()
+    ai_tiles.clear()
+    human_score = 0
+    ai_score = 0
+   
+    # Reset the board state
+    board.reset_board(rows=GRID_SIZE,
+    cols=GRID_SIZE,
+    hex_spacing_x=HEX_SPACING_X,
+    hex_height=HEX_HEIGHT,
+    hex_radius=HEX_RADIUS,
+    grid_x=GRID_X,
+    grid_y=GRID_Y)
+
+
+    # Reinitialize the bag with pieces
+    bag = [Piece(color, shape) for _ in range(2) for color in colors for shape in shapes]
+    random.shuffle(bag)
+confetti_images = [
+    pygame.image.load('confetti1.png').convert_alpha(),
+    pygame.image.load('confetti2.png').convert_alpha(),
+    pygame.image.load('confetti3.png').convert_alpha(),
+    pygame.image.load('confetti4.png').convert_alpha(),
+    pygame.image.load('confetti5.png').convert_alpha(),
+    pygame.image.load('confetti6.png').convert_alpha(),
+]
+falling_confetti = []  # Global list
+
+
+def confetti_animation(dt):
+    global falling_confetti
+    if not falling_confetti:
+        for _ in range(80):
+            if random.random() < 0.7:  # 70% chance it's a confetti image
+                image = random.choice(confetti_images)
+                size = 40
+                scaled_image = pygame.transform.scale(image, (size, size))
+                confetti = {
+                    'type': 'image',
+                    'x': random.randint(0, WINDOW_WIDTH - size),
+                    'y': random.randint(-WINDOW_HEIGHT, WINDOW_HEIGHT),
+                    'image': scaled_image,
+                    'size': size,
+                    'speed': 30
+                }
+            else:  # 30% chance it's a circle
+                size = random.randint(8, 20)
+                confetti = {
+                    'type': 'circle',
+                    'x': random.randint(0, WINDOW_WIDTH - size),
+                    'y': random.randint(-WINDOW_HEIGHT, WINDOW_HEIGHT),
+                    'size': size,
+                    'color': (
+                        random.randint(150, 255),
+                        random.randint(150, 255),
+                        random.randint(150, 255)
+                    ),
+                    'speed': 30
+                }
+            falling_confetti.append(confetti)
+
+
+    for confetti in falling_confetti:
+        confetti['y'] += confetti['speed'] * dt
+
+
+        if confetti['y'] > WINDOW_HEIGHT:
+            confetti['y'] = random.randint(-100, -10)
+            confetti['x'] = random.randint(0, WINDOW_WIDTH - confetti['size'])
+
+
+            if confetti['type'] == 'image':
+                image = random.choice(confetti_images)
+                confetti['image'] = pygame.transform.scale(image, (confetti['size'], confetti['size']))
+            else:
+                confetti['color'] = (
+                    random.randint(150, 255),
+                    random.randint(150, 255),
+                    random.randint(150, 255)
+                )
+
+
+        if confetti['type'] == 'image':
+            screen.blit(confetti['image'], (confetti['x'], int(confetti['y'])))
+        elif confetti['type'] == 'circle':
+            pygame.draw.circle(
+                screen,
+                confetti['color'],
+                (int(confetti['x'] + confetti['size'] // 2), int(confetti['y'] + confetti['size'] // 2)),
+                confetti['size'] // 2
+            )
+
 
 falling_shapes = []  # Global list to store shapes
-
-
 def squareanimation(dt):
     global falling_shapes
     if not falling_shapes:
@@ -396,27 +437,20 @@ def squareanimation(dt):
             }
             falling_shapes.append(shape)
 
-
     fall_speed = 30  # pixels per second
-
-
     for shape in falling_shapes:
         shape['y'] += fall_speed * dt
-
 
         # Reset to top
         if shape['y'] > WINDOW_HEIGHT:
             shape['y'] = random.randint(-100, -10)
             shape['x'] = random.randint(0, WINDOW_WIDTH - shape['size'])
             shape['shape'] = random.choice(['square', 'circle', 'triangle', 'star'])  # Optional reshuffle
-
-
         x = shape['x']
         y = int(shape['y'])
         s = shape['size']
         c = shape['color']
         t = shape['shape']
-
 
         if t == 'square':
             pygame.draw.rect(screen, c, (x, y, s, s))
@@ -438,12 +472,9 @@ def squareanimation(dt):
                 points.append((px, py))
             pygame.draw.polygon(screen, c, points)
 
-
 # --- Main Loop ---
 while True:
     dt = clock.tick(60) / 1000  # Convert milliseconds to seconds
-
-
     for ev in pygame.event.get():
         if ev.type == pygame.QUIT:
             pygame.quit(); sys.exit()
@@ -456,10 +487,16 @@ while True:
             update_layout()
         elif ev.type == pygame.KEYDOWN and ev.key == pygame.K_f:
             toggle_fullscreen()
-
-
-
-
+        elif ev.type == pygame.KEYDOWN and ev.key == pygame.K_g:  # Press G to go to game over screen
+            if human_score > ai_score:
+                winner_text = f"{player_name} Wins!"
+            elif ai_score > human_score:
+                winner_text = f"{ai_name} Wins!"
+            else:
+                winner_text = "It's a Draw!"
+            state = 'gameover'            
+        
+        
         # --- START SCREEN ---
         if state == 'start':
             if ev.type == pygame.MOUSEBUTTONDOWN and start_btn.is_clicked(ev.pos):
@@ -493,40 +530,22 @@ while True:
                     state = 'game'  # Transition to game state
                     update_layout()  # Update the layout to match the new state
 
-                
-            
-
-
-
-
-        # --- GAMEPLAY ---
-       
-       
+        # --- GAMEPLAY ---    
         elif state == 'game':
-            # --- Draw Swap & End Turn Buttons ONLY if in the game state ---
-            
+            # --- Draw Swap & End Turn Buttons ONLY if in the game state --- 
             screen.blit(bag_img, swap_rect)
             screen.blit(turn_img,turn_rect)
-            
-             
-
-
-
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 # 1) Swap Tiles — ends your turn immediately
-    
                 if swap_rect.collidepoint(ev.pos) and not in_turn:
                     ai_message = get_ai_comment()
                     show_ai_message = True
                     draw_ai_message(ai_message)  # Draw the message on the screen
                     pygame.time.set_timer(pygame.USEREVENT, 500)
-                    bag.extend(human_tiles)
+                    #bag.extend(human_tiles)
                     random.shuffle(bag)
-                    human_tiles[:] = [bag.pop() for _ in range(6)]
-
-
-
-
+                    count = min(6, len(bag))
+                    human_tiles[:] = [bag.pop() for _ in range(count)]
                     # AI’s turn — animate each placement
                     board.start_turn()
                     while True:
@@ -545,15 +564,11 @@ while True:
                                     draw_hexagon_at(screen, cx,cy, HEX_RADIUS+3, PAGE_BG,neon)
                                     draw_hexagon_at(screen, cx,cy, HEX_RADIUS,HIGHLIGHT if (rr,cc) in valid_moves else PAGE_BG)
 
-
                                     # draw power-up icon
                                     pu = board.get_powerup_at(r, c)
                                     if pu and pu in powerup_icons:
                                         icon = powerup_icons[pu]
                                         screen.blit(icon, icon.get_rect(center=(center_x, center_y)))
-
-
-
 
                                     t = board.grid.get(r, c)
                                     if t:
@@ -568,8 +583,6 @@ while True:
                                 if img:
                                     screen.blit(img, img.get_rect(center=rect.center)) 
 
-
-
                             pygame.display.flip()
                             pygame.time.wait(500)
                         except InvalidMoveException:
@@ -578,13 +591,16 @@ while True:
                     board.end_turn()
                     board.start_turn()  # ← Preserve AI’s move state
 
-
                     # refill racks
                     while len(human_tiles) < 6 and bag:
                         human_tiles.append(bag.pop())
                     while len(ai_tiles) < 6 and bag:
                         ai_tiles.append(bag.pop())
                     ai_player.set_tiles(ai_tiles)
+                   # ✅ Check game over after AI turn
+                    check_game_over()
+                    if state == 'gameover':
+                        continue
                     in_turn = False
                     valid_moves = []
                     update_layout()
@@ -595,7 +611,6 @@ while True:
                                 if img:
                                     screen.blit(img, img.get_rect(center=rect.center))                  
                     continue
-
 
                 # 2) End Turn — commit your turn and animate AI
                 if turn_rect.collidepoint(ev.pos) and in_turn:
@@ -639,9 +654,6 @@ while True:
                                 if img:
                                     screen.blit(img, img.get_rect(center=rect.center))
                             
-                            
-                            
-                            
                             pygame.display.flip()
                             pygame.time.wait(500)
         
@@ -656,6 +668,11 @@ while True:
                     while len(ai_tiles) < 6 and bag:
                         ai_tiles.append(bag.pop())
                     ai_player.set_tiles(ai_tiles)
+                   # ✅ Check game over after AI turn
+                    check_game_over()
+                    if state == 'gameover':
+                        continue
+
                     in_turn = False
                     valid_moves = []
                     update_layout()
@@ -717,8 +734,15 @@ while True:
             elif ev.type == pygame.USEREVENT:
                 show_ai_message = False  # Hide the message after the timeout
                 pygame.time.set_timer(pygame.USEREVENT, 0)
-
-
+       
+       
+        elif state == 'gameover':
+            if ev.type == pygame.MOUSEBUTTONDOWN and gameover_btn.is_clicked(ev.pos):
+                reset_game()
+        
+        
+        
+        
     # --- DRAW ---
     screen.fill((15, 23, 42))
     
@@ -737,12 +761,9 @@ while True:
             # Draw the main text in the center
             border_surface.blit(base, (border_width, border_width))
             return border_surface
-    
-    
+        
     if state == 'start':
         squareanimation(dt)
-
-
         # Title Text with Border
         title_surface = render_text_with_border(font_large, 'Smart Qwirkle', (255, 255, 255), (0, 0, 0), border_width=3)
         padding = 30
@@ -750,14 +771,13 @@ while True:
         box_height = title_surface.get_height() + padding
         box_x = (WINDOW_WIDTH - box_width) // 2
         box_y = 100  # Moved up slightly to make more room below
-
-
         # Title Glow Box
-        pygame.draw.rect(screen, (0, 255, 255), (box_x - 4, box_y - 4, box_width + 8, box_height + 8), border_radius=10)
+        pygame.draw.rect(screen, (0, 255, 255), (box_x - 10, box_y - 10, box_width + 20, box_height + 20), border_radius=10)
+        pygame.draw.rect(screen, (255, 255, 255),(box_x - 5,  box_y - 5,  box_width + 10, box_height + 10),border_radius=13) 
         pygame.draw.rect(screen, (20, 20, 60), (box_x, box_y, box_width, box_height), border_radius=10)
         screen.blit(title_surface, (box_x + padding, box_y + padding // 2))
-
-
+        
+      
         # Rules Text
         rules_text = [
             "Welcome to Smart Qwirkle",
@@ -767,22 +787,17 @@ while True:
             "Get ready to outthink, outplay, and outscore"
         ]
         rule_font = font_small
-
-
         rule_box_width = 900
         rule_box_height = len(rules_text) * 40 + 45
         rule_box_x = (WINDOW_WIDTH - rule_box_width) // 2
         rule_box_y = box_y + box_height + 30  # Now just below the title box
 
-
         # Glow Outline for Rules Box
-        glow_rect = pygame.Rect(rule_box_x - 4, rule_box_y - 4, rule_box_width + 8, rule_box_height + 8)
-        pygame.draw.rect(screen, (0, 255, 255), glow_rect, border_radius=15)
-       
-        # Inner Rules Box
+        pygame.draw.rect(screen, (0, 255, 255),(rule_box_x - 10, rule_box_y - 10,rule_box_width + 20, rule_box_height + 20),border_radius=20)
+        pygame.draw.rect(screen, (255, 255, 255),(rule_box_x - 5, rule_box_y - 5, rule_box_width + 10, rule_box_height + 10),border_radius=18)
         rule_box_rect = pygame.Rect(rule_box_x, rule_box_y, rule_box_width, rule_box_height)
         pygame.draw.rect(screen, (89, 15, 134), rule_box_rect, border_radius=15)
-        pygame.draw.rect(screen, (0, 0, 0), rule_box_rect, 3, border_radius=15)
+    
 
 
         # Centered Rules Text
@@ -793,11 +808,9 @@ while True:
             rule_txt_rect = rule_txt.get_rect(center=(rule_box_rect.centerx, rule_box_rect.top + vertical_margin + (i * 45)))
             screen.blit(rule_txt, rule_txt_rect)
 
-
         # Start Button below rules box
         start_btn.rect.topleft = ((WINDOW_WIDTH - start_btn.rect.width) // 2, rule_box_rect.bottom + 30)
         start_btn.draw(screen)
-
 
     elif state=='name_difficulty':
         squareanimation(dt)
@@ -810,15 +823,15 @@ while True:
         box_y = 100  # Adjust the Y position for your label
 
     # outer neon glow
-        pygame.draw.rect(screen, (0, 255, 255), (box_x - 4, box_y - 4, box_w + 8, box_h + 8), border_radius=8)
+        pygame.draw.rect(screen, (0, 255, 255), (box_x - 10, box_y - 10, box_w + 20, box_h + 20), border_radius=8)
+        pygame.draw.rect(screen, (255, 255, 255),(box_x- 5, box_y - 5, box_w+ 10, box_h + 10),border_radius=18)
         pygame.draw.rect(screen, (20, 20, 60), (box_x, box_y, box_w, box_h), border_radius=8)
         screen.blit(label_txt, (box_x + pad, box_y + pad // 2))
 
     # Position for name input field
         inp = name_input.rect
         inp.y = box_y + box_h + 40 
-        glow_rect = pygame.Rect(inp.x - 4, inp.y - 4, inp.w + 4, inp.h + 8)
-        pygame.draw.rect(screen, (0, 255, 255), glow_rect, border_radius=10)
+        pygame.draw.rect(screen, (0, 255, 255), (inp.x - 5, inp.y - 5, inp.w + 10, inp.h + 10), border_radius=10)
         name_input.draw(screen, font_small)
         
         difficulty_label_txt = font_med.render('Select Difficulty:', True, (255, 255, 255))
@@ -828,7 +841,8 @@ while True:
         difficulty_label_y = inp.bottom + 40  # Positioned below the name input field
 
     # Draw outer neon glow for the "Select Difficulty" label
-        pygame.draw.rect(screen, (0, 255, 255), (difficulty_label_x - 4, difficulty_label_y - 4, difficulty_label_box_w + 8, difficulty_label_box_h + 8), border_radius=8)
+        pygame.draw.rect(screen, (0, 255, 255), (difficulty_label_x - 10, difficulty_label_y - 10, difficulty_label_box_w + 20, difficulty_label_box_h + 20), border_radius=8)
+        pygame.draw.rect(screen, (255, 255, 255), (difficulty_label_x - 5, difficulty_label_y - 5, difficulty_label_box_w + 10, difficulty_label_box_h + 10), border_radius=8)
         pygame.draw.rect(screen, (20, 20, 60), (difficulty_label_x, difficulty_label_y, difficulty_label_box_w, difficulty_label_box_h), border_radius=8)
         screen.blit(difficulty_label_txt, (difficulty_label_x + pad, difficulty_label_y + pad // 2))
 
@@ -864,9 +878,6 @@ while True:
             # Transition directly to game after selecting difficulty
             player_name = name_input.text  # Store player name
 
-
-
-
         # board
     elif state == 'game':
         
@@ -882,8 +893,6 @@ while True:
         white       = (255,255,255)
         RED   = (255,  50,  50)
         GREEN = ( 50, 255,  50)
-
-
         rules = [
             "Rules:",
             "- Each player draws 6 tiles from the bag to \n  form their rack.",
@@ -911,9 +920,9 @@ while True:
         box_y = GRID_Y
 
         # draw glow + inner
-        glow_rect  = pygame.Rect(box_x-4, box_y-4, box_w+8, box_h+8)
         inner_rect = pygame.Rect(box_x,   box_y,   box_w,   box_h)
-        pygame.draw.rect(screen, neon,   glow_rect,  border_radius=12)
+        pygame.draw.rect(screen, neon, ( box_x-10, box_y-10, box_w+20, box_h+20 ),  border_radius=16)
+        pygame.draw.rect(screen, white,   (box_x-5, box_y-5, box_w+10, box_h+10),  border_radius=16)
         pygame.draw.rect(screen, purple, inner_rect, border_radius=12)
 
         y = box_y + padding
@@ -939,7 +948,6 @@ while True:
                 screen.blit(txt, (box_x + padding, y))
                 y += txt.get_height() + rule_spacing
 
-            
         y += heading_gap
         
         hdr = "Power-Ups:"
@@ -963,9 +971,7 @@ while True:
                 txt = font_small.render(desc, True, white)
                 screen.blit(txt, (box_x + padding, y))
                 y += txt.get_height() + power_spacing
-
-
-        
+    
         for rr in range(GRID_SIZE):
             for cc in range(GRID_SIZE):
                 fill = HIGHLIGHT if (rr, cc) in valid_moves else PAGE_BG
@@ -977,11 +983,6 @@ while True:
                             outline_color=neon)
                 draw_hexagon_at(screen, cx, cy, HEX_RADIUS, fill)
 
-
-                # --- NEW: draw the grid coordinate text ---
-                #coord_txt = font_small.render(f"{rr},{cc}", True, (0, 0, 0))
-                #txt_rect = coord_txt.get_rect(center=(cx, cy))
-                #screen.blit(coord_txt, txt_rect)
                 pu = board.get_powerup_at(rr, cc)
                 if pu in powerup_icons:
                     icon = powerup_icons[pu]
@@ -1020,14 +1021,6 @@ while True:
 
     # AI Score Box
         ai_score_box = pygame.Rect(scores_x, GRID_Y , score_box_width, score_box_height)
-        #ai_glow = ai_score_box.inflate(glow_radius, glow_radius)
-
-    # Draw glow and AI score box
-        #pygame.draw.rect(screen, neon, ai_glow, border_radius=12)
-        #pygame.draw.rect(screen, purple, ai_score_box, border_radius=12)
-
-    # Fir
-    # st line: AI Score
         ai_heading = font_med.render("SCORE", True, (255, 255, 255))
         screen.blit(
             ai_heading,
@@ -1050,14 +1043,8 @@ while True:
 
     # Human Score Box (just below AI score box)
         human_score_box = pygame.Rect(30, WINDOW_HEIGHT - 400,250,120)
-        #human_glow = human_score_box.inflate(glow_radius, glow_radius)
-
-    # Draw glow and Human score box
-        #pygame.draw.rect(screen, neon, human_glow, border_radius=12)
-        #pygame.draw.rect(screen, purple, human_score_box, border_radius=12)
-
     # First line: Human Score
-        human_heading = font_med.render("SCORE", True, (255, 255, 255))
+        human_heading = font_med.render("", True, (255, 255, 255))
         screen.blit(
             human_heading,
             (human_score_box.centerx - human_heading.get_width() // 2,
@@ -1076,10 +1063,6 @@ while True:
         human_text = f'{player_name}: {human_score}'
         human_surf = render_text_with_border(font_small, human_text, (255, 255, 255), (0, 0, 0), border_width=2)
         screen.blit(human_surf, (text_x, text_y))
-
-
-
-
     # --- build ui_rects of exactly your swap, end-turn and hand tiles ---
         ui_rects = [swap_rect, turn_rect]
         ui_rects += [
@@ -1089,22 +1072,20 @@ while True:
 
     # --- compute tight bounds around those elements ---
      
-        PANEL_X      = HAND_X - swap_rect.width - 60        # start just left of Swap button
-        PANEL_Y      = UI_Y + NAME_AREA_HEIGHT - 25         # a little above your rack
+        PANEL_X      = HAND_X - swap_rect.width - 65        # start just left of Swap button
+        PANEL_Y      = UI_Y + NAME_AREA_HEIGHT - 30         # a little above your rack
         PANEL_WIDTH  = swap_rect.width + 40 \
                    + MAX_RACK_WIDTH \
                    + 65                             # swap + gap + 6 tiles + extra
-        PANEL_HEIGHT = HAND_AREA_HEIGHT + 68            # rack height + padding
+        PANEL_HEIGHT = HAND_AREA_HEIGHT + 78        # rack height + padding
 
         panel_rect = pygame.Rect(PANEL_X, PANEL_Y, PANEL_WIDTH, PANEL_HEIGHT)
         glow_rect  = panel_rect.inflate(8, 8)
-        pygame.draw.rect(screen, neon, glow_rect,  border_radius=12, width=4)
-        pygame.draw.rect(screen, neon, panel_rect, border_radius=12, width=2)
-            
+        pygame.draw.rect(screen, neon, (PANEL_X, PANEL_Y, PANEL_WIDTH, PANEL_HEIGHT),  border_radius=16, width=5)
+        pygame.draw.rect(screen, (255,255,255),  (PANEL_X+5, PANEL_Y+5, PANEL_WIDTH-10, PANEL_HEIGHT-10),  border_radius=12, width=4)
+        
 
-
-
-
+ 
     # --- HAND ---  
     for i, t in enumerate(human_tiles):
         rect = get_hand_tile_rect(i, UI_Y + NAME_AREA_HEIGHT + 10)
@@ -1113,25 +1094,17 @@ while True:
         img = tiles_images.get((t.color.lower(), t.shape))
         if img:
            screen.blit(img, img.get_rect(center=rect.center))
-            
-
-
+   
     # --- SWAP & END TURN BUTTONS ---
     screen.blit(bag_img, swap_rect)
     screen.blit(turn_img, turn_rect)
-
 
     # --- DRAG-PREVIEW ---
     if dragging and drag_tile:
         _, tile = drag_tile
         img = tiles_images.get((tile.color.lower(), tile.shape))
         if img:
-            #ai_score_box = pygame.Rect(30, GRID_Y  , 250, 120)
-            #ai_glow = ai_score_box.inflate(8, 8)  # Glow effect for the box
-
-            #pygame.draw.rect(screen, neon, ai_glow, border_radius=12)
-            #pygame.draw.rect(screen, (20, 20, 60), ai_score_box, border_radius=12)
-
+          
     # AI Score Heading
             ai_heading = font_med.render("SCORE", True, (255, 255, 255))
             screen.blit(ai_heading, (ai_score_box.centerx - ai_heading.get_width() // 2, ai_score_box.y + 8))
@@ -1152,7 +1125,7 @@ while True:
     # Draw Human score box (below AI score box)
             human_score_box = pygame.Rect( 30, WINDOW_HEIGHT- 400 ,250, 120)  # Adjusted Y position for Human score box
     # Human Score Heading
-            human_heading = font_med.render("SCORE", True, (255, 255, 255))
+            human_heading = font_med.render("", True, (255, 255, 255))
             screen.blit(human_heading, (human_score_box.centerx - human_heading.get_width() // 2, human_score_box.y + 8))
 
     # Human avatar and score
@@ -1168,8 +1141,6 @@ while True:
             human_surf = render_text_with_border(font_small, human_text, (255, 255, 255), (0, 0, 0), border_width=2)
             screen.blit(human_surf, (text_x, text_y))
 
-        
-        
         # hand
         for i,t in enumerate(human_tiles):
             rect = get_hand_tile_rect(i, UI_Y+NAME_AREA_HEIGHT+10)
@@ -1179,11 +1150,9 @@ while True:
             if img:
                 screen.blit(img, img.get_rect(center=rect.center))
 
-
         # Swap & End‑turn buttons
         screen.blit(bag_img, swap_rect)
         screen.blit(turn_img, turn_rect)
-
 
         # drag‑preview
         if dragging and drag_tile:
@@ -1191,5 +1160,50 @@ while True:
             img = tiles_images.get((tile.color.lower(),tile.shape))
             if img:
                 screen.blit(img, (mouse_x-CELL_SIZE//2, mouse_y-CELL_SIZE//2))
+    
+    if state == 'gameover':
+
+
+        screen.fill((15, 23, 42))
+        confetti_animation(dt)
+        # Title Text with Border
+        title_surface = render_text_with_border(font_large, 'GAME OVER!', (255, 255, 255), (0, 0, 0), border_width=3)
+        padding = 30
+        box_width = title_surface.get_width() + padding * 2
+        box_height = title_surface.get_height() + padding
+        box_x = (WINDOW_WIDTH - box_width) // 2
+        box_y = 100  # Top margin
+
+
+        # Outer Cyan Border
+        pygame.draw.rect(screen, (0, 255, 255), (box_x - 10, box_y - 10, box_width + 20, box_height + 20), border_radius=16)
+        # Inner White Border
+        pygame.draw.rect(screen, (255, 255, 255), (box_x - 5, box_y - 5, box_width + 10, box_height + 10), border_radius=13)
+
+
+        # Main Box
+        pygame.draw.rect(screen, (20, 20, 60), (box_x, box_y, box_width, box_height), border_radius=10)
+
+
+        # Render Title Text
+        screen.blit(title_surface, (box_x + padding, box_y + padding // 2))
+
+
+        # Winner Text (Glow and Shadow)
+        winner_surface = render_text_with_border(font_large, winner_text, (255, 255, 255), (0, 255, 255), border_width=3)
+        screen.blit(winner_surface, winner_surface.get_rect(center=(WINDOW_WIDTH // 2, 250)))
+
+
+        # Display Scores
+        score_text_p1 = f"{player_name}: {human_score} Points"
+        score_text_p2 = f"Ava: {ai_score} Points"
+        score_surface_1 = font_med.render(score_text_p1, True, (200, 200, 200))
+        score_surface_2 = font_med.render(score_text_p2, True, (200, 200, 200))
+
+
+        screen.blit(score_surface_1, score_surface_1.get_rect(center=(WINDOW_WIDTH // 2, 320)))
+        screen.blit(score_surface_2, score_surface_2.get_rect(center=(WINDOW_WIDTH // 2, 360)))
+    
+    
     pygame.display.flip()
     clock.tick(120)
