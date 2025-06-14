@@ -501,6 +501,7 @@ while True:
         if state == 'start':
             if ev.type == pygame.MOUSEBUTTONDOWN and start_btn.is_clicked(ev.pos):
                 state = 'name_difficulty'
+                update_layout()
        
         # --- DIFFICULTY SCREEN ---
         elif state == 'name_difficulty':
@@ -872,11 +873,32 @@ while True:
             update_layout()  # Update the layout to match the new state
          elif med_btn.is_clicked(ev.pos):
             difficulty = 'medium'
-            easy_btn.selected = False
+            easy_btn.selected    = False
             med_btn.selected = True
             hard_btn.selected = False
+            player_name = name_input.text  # Store player name
+            for _ in range(6):
+                if bag: human_tiles.append(bag.pop())
+                if bag: ai_tiles.append(bag.pop())
+            ai_player.set_tiles(ai_tiles)
+            state = 'game'  # Transition to game state
+            update_layout()  # Update the layout to match the new state
+            
             # Transition directly to game after selecting difficulty
             player_name = name_input.text  # Store player name
+         elif hard_btn.is_clicked(ev.pos):
+            easy_btn.selected = False
+            med_btn.selected = False
+            hard_btn.selected = True
+            # Transition directly to game after selecting difficulty
+            player_name = name_input.text  # Store player name
+            for _ in range(6):
+                if bag: human_tiles.append(bag.pop())
+                if bag: ai_tiles.append(bag.pop())
+            ai_player.set_tiles(ai_tiles)
+            state = 'game'  # Transition to game state
+            update_layout()
+             
 
         # board
     elif state == 'game':
